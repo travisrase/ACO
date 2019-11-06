@@ -3,3 +3,7 @@ class Ant:
         self.probability = probability
         self.townsVisited = townsVisited
         self.townsToVisit = townsToVisit
+        self.bestTour = 100000000
+
+    def getBestTour(self):
+        return self.bestTour
