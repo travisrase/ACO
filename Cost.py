@@ -1,0 +1,2 @@
+class Cost:
+    def init
