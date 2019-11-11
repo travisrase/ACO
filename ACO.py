@@ -145,11 +145,16 @@ class ACO:
 
 
     def updatePhermonesElitist(self,paths):
+        # Loop through pheremone matrix
+        #Get value at index of row and col
         for row in self.pheremoneMatrix:
             for col in self.pheremoneMatrix:
+                #Get the corresponing nodes for given path
                 node1 = [x[0] for x in paths].index(row)
                 node2 = [x[0] for x in paths].index(col)
+                #Apply pheremone update rule according to Elitism 
                 updateValue = (1-self.rho)*pheremoneMatrix[row][col] + (1/self.getDistance(node1, node2)) + self.elitismFactor*(self.bestPath)
+                # Update pheremone matrix 
                 self.pheremoneMatrix[row][col] = updateValue
 
     def updatePhermonesACS(self,paths):
