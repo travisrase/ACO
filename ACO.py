@@ -6,17 +6,17 @@ class ACO:
         #the type of algorithm to use (ACS or Elitist)
         self.algorithm = algorithm
         #number of ants in the colony
-        self.numAnts = numAnts
+        self.numAnts = int(numAnts)
         #number of search iterations
-        self.numIter = numIter
+        self.numIter = int(numIter)
         #the degree of influence of the phermones
-        self.aplha = alpha
-        self.beta = beta
-        self.rho = rho
-        self.elitismFactor = elitismFactor
-        self.epsilon = epsilon
-        self.tao0 = tao0
-        self.q0 = q0
+        self.aplha = float(alpha)
+        self.beta = float(beta)
+        self.rho = float(rho)
+        self.elitismFactor = float(elitismFactor)
+        self.epsilon = float(epsilon)
+        self.tao0 = float(tao0)
+        self.q0 = float(q0)
         self.problem = []
         #matrix keeping track of phermones between two nodes
         self.phermoneMatrix = []
@@ -28,7 +28,7 @@ class ACO:
     It is currently all 0's"""
     def initPhermoneMatrix(self):
         #init n x n 2d array where n = size of the problem
-        self.phermoneMatrix = np.zeros[(len(self.problem),(len(self.problem))]
+        self.phermoneMatrix = np.zeros((len(self.problem),len(self.problem)))
 
     def solve(self):
         #initialize the phermone matrix
@@ -50,13 +50,13 @@ class ACO:
         unvisitedNodes = self.problem
         for node in range(len(self.problem)):
             currentNode = path[-1]
-            nextNode = self.getNextNode(currentNode,unvisitedNodes)
+            nextNode = self.getNextNode(unvisitedNodes,currentNode)
             path += [nextNode]
             unvisitedNodes.remove(nextNode)
         return path
 
     #for a given point in a path, get the next node that the ant should visit
-    def getNextNode(self,currentNode=None,unvisitedNodes):
+    def getNextNode(self,unvisitedNodes,currentNode=None):
         node = 0
         if currentNode == None:
             #randomly generate starting node index
@@ -107,17 +107,20 @@ class ACO:
     def getPhermone(self,node1,node2):
         a = node1[0]
         b = node2[0]
-        return self.phermoneMatrix(a,b)
+        return self.phermoneMatrix[a,b]
 
     def setPhermone(self,node1,node2,val):
         a = node1[0]
         b = node2[0]
-        self.phermoneMatrix(a,b) = val
-        self.phermoneMatrix(b,a) = val
+        self.phermoneMatrix[a,b] = val
+        self.phermoneMatrix[b,a] = val
 
     def updatePhermones(self,paths):
-        self.updatePhermonesElitist(paths)
-        self.updatePhermonesACS(paths)
+        if (self.algorithm == "a"):
+            self.updatePhermonesACS(paths)
+        else:
+            self.updatePhermonesElitist(paths)
+
 
     def updatePhermonesElitist(self,paths):
         print()

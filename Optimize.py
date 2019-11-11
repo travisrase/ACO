@@ -16,6 +16,7 @@ class Optimize:
         self.rho = rho
         #elitism factor in Elitist Ant System
         self.elitismFactor = elitismFactor
+        #wearing away factors
         self.epsilon = epsilon
         self.tao0 = tao0
         #probability that the ant will choose the best leg for the next leg of the tour
@@ -25,9 +26,8 @@ class Optimize:
         #A list of three tuples of index, xcord, ycord
         self.problem = []
 
-
     def readProblem(self):
-        file = open(self.fileName, "r+")
+        file = open(self.problemName, "r+")
         inp = file.readlines()
         inp = [line.strip("\n") for line in inp]
         for r in inp:
@@ -35,16 +35,20 @@ class Optimize:
             row = r.split(" ")
             for num in row:
                 try:
-                    cleanRow += [int(num)]
+                    cleanRow += [float(num)]
                 except:
                     continue
+            #convert first index to int, since it is not a coordinate
+            try:
+                cleanRow[0] = int(cleanRow[0])
+            except:
+                continue
             self.problem += [cleanRow]
 
     def run(self):
         self.readProblem()
         aco = ACO(self.algorithm,self.numAnts,self.numIter,self.aplha,self.beta,self.rho,self.elitismFactor,self.epsilon,self.tao0,self.q0,self.problem)
         solution = aco.solve()
-
 
 #Get Terminal Input
 algorithm = sys.argv[1]
@@ -60,3 +64,4 @@ q0 = sys.argv[10]
 problemName = sys.argv[11]
 
 optimize = Optimize(algorithm,numAnts,numIter,aplha,beta,rho,elitismFactor,epsilon,tao0,q0,problemName)
+optimize.run()
