@@ -19,14 +19,16 @@ class ACO:
         self.q0 = q0
         self.problem = []
         #matrix keeping track of phermones between two nodes
-        self.permoneMatrix = []
+        self.phermoneMatrix = []
         #a list of all ant solutions
         self.bestPath = []
         self.cost = Cost()
 
+    """TODO: We need to determine how the phermone matrix should be initialized.
+    It is currently all 0's"""
     def initPhermoneMatrix(self):
         #init n x n 2d array where n = size of the problem
-        self.permoneMatrix = np.zeros[(len(self.problem),(len(self.problem))]
+        self.phermoneMatrix = np.zeros[(len(self.problem),(len(self.problem))]
 
     def solve(self):
         #initialize the phermone matrix
@@ -63,10 +65,10 @@ class ACO:
         else:
             #ACS
             if (self.algorithm == "a"):
-                node = self.getNextNodeACS(path,unvisitedNodes)
+                node = self.getNextNodeACS(currentNode,unvisitedNodes)
             #Elitist
             else:
-                node = self.getNextNodeElitist(path,unvisitedNodes)
+                node = self.getNextNodeElitist(currentNode,unvisitedNodes)
         return node
 
     def getNextNodeElitist(self,path,unvisitedNodes):
@@ -93,17 +95,50 @@ class ACO:
             probabilitiesList.append(nodeTuple)
         return probabilitiesList    
 
-    def getNextNodeACS(self,path,unvisitedNodes):
+        #normalizeRanges so all values are between 0 and 1
+        sum = sum(probabilityRanges)
+        normalizedRanges = [i/sum for i in probabilityRanges]
+        #generate random number between 0 and 1
+        r = random.random()
+        #iterate through ranges to see where the value falls
+        for j in range(normalizedRanges):
+            if r > normalizedRanges[j]:
+                continue
+            else:
+                #range found, return the unvisited node at j-1
+                #this node corresponds with range associated
+                #with the random number found
+                return unvisitedNodes[j-1]
+
+    def getNextNodeACS(self,currentNode,unvisitedNodes):
         print()
 
-    def updatePhermones(self,paths)
-        print()
+    def getPhermone(self,node1,node2):
+        a = node1[0]
+        b = node2[0]
+        return self.phermoneMatrix(a,b)
+
+    def setPhermone(self,node1,node2,val):
+        a = node1[0]
+        b = node2[0]
+        self.phermoneMatrix(a,b) = val
+        self.phermoneMatrix(b,a) = val
+
+    def updatePhermones(self,paths):
         self.updatePhermonesElitist(paths)
         self.updatePhermonesACS(paths)
 
-    def updatePhermonesElitist(self,paths)
-        
+    def updatePhermonesElitist(self,paths):
         print()
 
-    def updatePhermonesACS(self,paths)
+    def updatePhermonesACS(self,paths):
         print()
+
+    #helpers
+    def getDistance(self,node1,node2):
+        x1 = node1[1]
+        y1 = node1[2]
+        x2 = node2[1]
+        y2 = node2[2]
+        distance = math.sqrt((x2-x1)**2 + (y2-y1)**2)
+        return distance
