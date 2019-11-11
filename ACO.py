@@ -4,7 +4,9 @@ from Cost import Cost
 class ACO:
     def __init__(self,algorithm, numAnts,numIter,alpha,beta,rho,elitismFactor, epsilon,tao0,q0,problem):
         #the type of algorithm to use (ACS or Elitist)
-        self.algorithm = algorithm
+        self.isACS = False
+        if algorithm == "a":
+            self.isACS = True
         #number of ants in the colony
         self.numAnts = int(numAnts)
         #number of search iterations
@@ -53,6 +55,8 @@ class ACO:
             nextNode = self.getNextNode(unvisitedNodes,currentNode)
             path += [nextNode]
             unvisitedNodes.remove(nextNode)
+        if self.isACS:
+
         return path
 
     #for a given point in a path, get the next node that the ant should visit
@@ -71,14 +75,29 @@ class ACO:
                 node = self.getNextNodeElitist(currentNode,unvisitedNodes)
         return node
 
-    def getNextNodeElitist(self,currentNode,unvisitedNodes):
-        #build ranges of proabilities for picking each node
-        probabilityRanges=[0]
-        for unvisitedNode in unvisitedNodes:
-            t = self.getPhermone(currentNode,unvisitedNode)
-            distance = self.getDistance(currentNode,unvisitedNode)
-            val = t * (1/distance)
-            probabilityRanges += [probabilityRanges[-1] + val]
+    def getNextNodeElitist(self,path,unvisitedNodes):
+        #init probabilities list
+        probabilitiesList = []
+        # all unvisited nodes
+        #Get all unvisited node Sum
+        for unvisited in unvisitedNodes:
+            # Get the pheramone concetration
+            phermone = self.pheremoneMatrix[path[0]][node[0]]
+           # Calc distance between node i and node j
+            dist = self.cost.getCost(path, node)
+            # Probability update divisor
+            sumUnvisited += (pow(phermone, self.alpha) * pow(1/dist, self.beta))
+       # Loop through again to get the probabilities for each unvisited node
+        for node in unvisitedNodes:
+            phermone = self.pheremoneMatrix[path[0]][node[0]]
+            dist = self.cost.getCost(path, node)
+            # Get the probability of the unvisited node being chosen according to elite rule
+            nodeProbability = (pow(phermone, self.alpha) * pow(1/dist, self.beta))/ sumUnvisited
+           # Get tuple containing node index and the probability of being chosen
+            nodeTuple = (node[0], nodeProbability)
+            # Add probability tuple to the list of probabilities
+            probabilitiesList.append(nodeTuple)
+        return probabilitiesList
 
     def getNextNodeACS(self,currentNode,unvisitedNodes):
         #build ranges of proabilities for picking each node
