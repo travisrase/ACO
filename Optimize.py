@@ -45,7 +45,7 @@ class Optimize:
         if self.algorithm == "g":
             print()
         else:
-            aco = ACO(self.numAnts,self.numIter,self.aplha,self.beta,self.rho,self.elitismFactor,self.epsilon,self.tao0,self.q0,self.problem)
+            aco = ACO(self.algorithm,self.numAnts,self.numIter,self.aplha,self.beta,self.rho,self.elitismFactor,self.epsilon,self.tao0,self.q0,self.problem)
             solution = aco.solve()
 
 
