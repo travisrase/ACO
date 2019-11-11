@@ -2,7 +2,7 @@ import sys
 from ACO import ACO
 class Optimize:
     def __init__(self,algorithm,numAnts,numIter,alpha,beta,rho,elitismFactor,epsilon,tao0,q0,problemName):
-        #g for greedy, a for Ant Colony System
+        #e for elitist, a for Ant Colony System
         self.algorithm = algorithm
         #number of ants in the colony
         self.numAnts = numAnts
@@ -42,11 +42,8 @@ class Optimize:
 
     def run(self):
         self.readProblem()
-        if self.algorithm == "g":
-            print()
-        else:
-            aco = ACO(self.algorithm,self.numAnts,self.numIter,self.aplha,self.beta,self.rho,self.elitismFactor,self.epsilon,self.tao0,self.q0,self.problem)
-            solution = aco.solve()
+        aco = ACO(self.algorithm,self.numAnts,self.numIter,self.aplha,self.beta,self.rho,self.elitismFactor,self.epsilon,self.tao0,self.q0,self.problem)
+        solution = aco.solve()
 
 
 #Get Terminal Input

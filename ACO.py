@@ -1,5 +1,6 @@
 import numpy as np
 import random
+from Cost import Cost
 class ACO:
     def __init__(self,algorithm, numAnts,numIter,alpha,beta,rho,elitismFactor, epsilon,tao0,q0,problem):
         #the type of algorithm to use (ACS or Elitist)
@@ -21,6 +22,7 @@ class ACO:
         self.permoneMatrix = []
         #a list of all ant solutions
         self.bestPath = []
+        self.cost = Cost()
 
     def initPhermoneMatrix(self):
         #init n x n 2d array where n = size of the problem
