@@ -87,11 +87,9 @@ class ACO:
             #normalizeRanges so all values are between 0 and 1
             sumProbs = sum(probs)
             probs = [i/sumProbs for i in probs]
-            indexList = [item[0] for item in unvisitedNodes]
-            print(len(indexList))
-            print(len(probs))
-            node = np.random.choice(indexList, 1, p=probs)
-            return node
+            indexList = np.arange(0,len(unvisitedNodes),1)
+            index = np.random.choice(indexList, 1, p=probs)
+            return unvisitedNodes[index]
 
     def getPhermone(self,node1,node2):
         a = node1[0]
