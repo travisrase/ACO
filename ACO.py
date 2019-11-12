@@ -19,12 +19,14 @@ class ACO:
         self.epsilon = float(epsilon)
         self.tao0 = float(tao0)
         self.q0 = float(q0)
-        self.problem = []
+        self.problem = problem
         #matrix keeping track of phermones between two nodes
         self.phermoneMatrix = []
         #a list of all ant solutions
         self.bestPath = []
         self.cost = Cost()
+        self.ants =[]
+
 
     """TODO: We need to determine how the phermone matrix should be initialized.
     It is currently all 0's"""
@@ -40,6 +42,7 @@ class ACO:
             paths = []
             for ant in range(self.numAnts):
                 path = self.buildPath()
+                self.ants += path
                 paths += [path]
             self.bestPath = self.getBestPath(paths)
             self.updatePhermones(paths)
@@ -50,9 +53,16 @@ class ACO:
         path = []
         #the nodes that have not yet been visited by the ant
         unvisitedNodes = self.problem
+        print(unvisitedNodes)
         for node in range(len(self.problem)):
-            currentNode = path[-1]
-            nextNode = self.getNextNode(unvisitedNodes,currentNode)
+            if len(path) > 0:
+                currentNode = path[-1]
+                print(currentNode)
+                # PROBLEM WITH FILE? PROBLEM FOR FIRST TWO INDEX
+                nextNode = self.getNextNode(unvisitedNodes,currentNode)
+                print(nextNode)
+            else:
+                nextNode = unvisitedNodes[2]
             path += [nextNode]
             unvisitedNodes.remove(nextNode)
         if self.isACS:
@@ -112,15 +122,15 @@ class ACO:
     def updatePhermonesElitist(self,paths):
         # Loop through pheremone matrix
         #Get value at index of row and col
-        for row in self.pheremoneMatrix:
-            for col in self.pheremoneMatrix:
+        for row in self.phermoneMatrix:
+            for col in self.phermoneMatrix:
                 #Get the corresponing nodes for given path
                 node1 = [x[0] for x in paths].index(row)
                 node2 = [x[0] for x in paths].index(col)
                 #Apply pheremone update rule according to Elitism
-                updateValue = (1-self.rho)*pheremoneMatrix[row][col] + (1/self.getDistance(node1, node2)) + self.elitismFactor*(self.bestPath)
+                updateValue = (1-self.rho)*self.phermoneMatrix[row][col] + (1/self.getDistance(node1, node2)) + self.elitismFactor*(self.bestPath)
                 # Update pheremone matrix
-                self.pheremoneMatrix[row][col] = updateValue
+                self.phermoneMatrix[row][col] = updateValue
 
     def updatePhermonesACS(self,paths):
         bestPath = self.getBestPath(paths)
