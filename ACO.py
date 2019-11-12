@@ -54,14 +54,11 @@ class ACO:
         path = []
         #the nodes that have not yet been visited by the ant
         unvisitedNodes = self.problem[2:]
-        print(unvisitedNodes)
         for node in range(len(self.problem)):
             if len(path) > 0:
                 currentNode = path[-1]
-                print(currentNode)
                 # PROBLEM WITH FILE? PROBLEM FOR FIRST TWO INDEX
                 nextNode = self.getNextNode(unvisitedNodes,currentNode)
-                print(nextNode)
             else:
                 nextNode = unvisitedNodes[0]
             path += [nextNode]
@@ -81,7 +78,7 @@ class ACO:
             return node
         else:
             #build ranges of proabilities for picking each node
-            probs=[0]
+            probs=[]
             for unvisitedNode in unvisitedNodes:
                 t = self.getPhermone(currentNode,unvisitedNode)
                 distance = self.getDistance(currentNode,unvisitedNode)
@@ -89,10 +86,10 @@ class ACO:
                 probs += [val]
             #normalizeRanges so all values are between 0 and 1
             sumProbs = sum(probs)
-            print(sumProbs)
-            probs += [i/sumProbs for i in probs]
+            probs = [i/sumProbs for i in probs]
             indexList = [item[0] for item in unvisitedNodes]
             print(len(indexList))
+            print(len(probs))
             node = np.random.choice(indexList, 1, p=probs)
             return node
 
