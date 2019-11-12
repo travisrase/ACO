@@ -28,7 +28,6 @@ class ACO:
         self.cost = Cost()
         self.ants =[]
 
-
     """TODO: We need to determine how the phermone matrix should be initialized.
     It is currently all 0's"""
     def initPhermoneMatrix(self):
@@ -54,7 +53,7 @@ class ACO:
         #the path created by a given ant
         path = []
         #the nodes that have not yet been visited by the ant
-        unvisitedNodes = self.problem[2:]
+        unvisitedNodes = self.problem
         for node in range(len(self.problem)):
             if len(path) > 0:
                 currentNode = path[-1]
@@ -85,7 +84,7 @@ class ACO:
             #build ranges of proabilities for picking each node
             probs=[]
             for unvisitedNode in unvisitedNodes:
-                t = self.getPhermone(currentNode,unvisitedNode)  
+                t = self.getPhermone(currentNode,unvisitedNode)
                 distance = self.getDistance(currentNode,unvisitedNode)
                 if distance != 0:
                     val = t**self.alpha * (1/distance)**self.beta
@@ -100,13 +99,13 @@ class ACO:
             return unvisitedNodes[index]
 
     def getPhermone(self,node1,node2):
-        a = node1[0]
-        b = node2[0]
+        a = node1[0]-1
+        b = node2[0]-1
         return self.phermoneMatrix[a,b]
 
     def setPhermone(self,node1,node2,val):
-        a = node1[0]
-        b = node2[0]
+        a = node1[0]-1
+        b = node2[0]-1
         self.phermoneMatrix[a,b] = val
         self.phermoneMatrix[b,a] = val
 
@@ -136,7 +135,7 @@ class ACO:
                 node1 = [x[0] for x in paths].index(row)
                 node2 = [x[0] for x in paths].index(col)
                 #Apply pheremone update rule according to Elitism
-                updateValue = (1-self.rho)*self.phermoneMatrix[row][col] + (1/self.getDistance(node1, node2)) + self.elitismFactor*(self.bestPath)
+                updateValue = (1-self.rho)*self.getPhermone(row,col) + (1/self.getDistance(node1, node2)) + self.elitismFactor*(self.bestPath)
                 # Update pheremone matrix
                 self.phermoneMatrix[row][col] = updateValue
 

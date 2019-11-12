@@ -40,10 +40,12 @@ class Optimize:
                     continue
             #convert first index to int, since it is not a coordinate
             try:
+
                 cleanRow[0] = int(cleanRow[0])
             except:
                 continue
-            self.problem += [cleanRow]
+            if len(cleanRow) > 2:
+                self.problem += [cleanRow]
 
     def run(self):
         self.readProblem()
