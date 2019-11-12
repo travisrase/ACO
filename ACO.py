@@ -78,11 +78,12 @@ class ACO:
     def getNextNodeElitist(self,path,unvisitedNodes):
         #init probabilities list
         probabilitiesList = []
+        indexList = []
         # all unvisited nodes
         #Get all unvisited node Sum
         for unvisited in unvisitedNodes:
             # Get the pheramone concetration
-            phermone = self.pheremoneMatrix[path[0]][node[0]]
+            phermone = self.pheremoneMatrix[path[0]][unvisited[0]]
            # Calc distance between node i and node j
             dist = self.cost.getCost(path, node)
             # Probability update divisor
@@ -96,8 +97,10 @@ class ACO:
            # Get tuple containing node index and the probability of being chosen
             nodeTuple = (node[0], nodeProbability)
             # Add probability tuple to the list of probabilities
-            probabilitiesList.append(nodeTuple)
-        return probabilitiesList
+            indexList.append(node[0])
+            probabilitiesList.append(nodeProbability)
+        nodeIndex = np.random.choice(indexList, probabilitiesList) 
+        return [i for i, v in enumerate(unvisitedNodes) if v[0] == nodeIndex]
 
     def getNextNodeACS(self,currentNode,unvisitedNodes):
         #build ranges of proabilities for picking each node
@@ -142,7 +145,17 @@ class ACO:
 
 
     def updatePhermonesElitist(self,paths):
-        print()
+        # Loop through pheremone matrix
+        #Get value at index of row and col
+        for row in self.pheremoneMatrix:
+            for col in self.pheremoneMatrix:
+                #Get the corresponing nodes for given path
+                node1 = [x[0] for x in paths].index(row)
+                node2 = [x[0] for x in paths].index(col)
+                #Apply pheremone update rule according to Elitism 
+                updateValue = (1-self.rho)*pheremoneMatrix[row][col] + (1/self.getDistance(node1, node2)) + self.elitismFactor*(self.bestPath)
+                # Update pheremone matrix 
+                self.pheremoneMatrix[row][col] = updateValue
 
     def updatePhermonesACS(self,paths):
         print()
