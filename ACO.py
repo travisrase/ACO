@@ -1,6 +1,7 @@
 import numpy as np
 import random
 from Cost import Cost
+import math
 class ACO:
     def __init__(self,algorithm, numAnts,numIter,alpha,beta,rho,elitismFactor, epsilon,tao0,q0,problem):
         #the type of algorithm to use (ACS or Elitist)
@@ -12,7 +13,7 @@ class ACO:
         #number of search iterations
         self.numIter = int(numIter)
         #the degree of influence of the phermones
-        self.aplha = float(alpha)
+        self.alpha = float(alpha)
         self.beta = float(beta)
         self.rho = float(rho)
         self.elitismFactor = float(elitismFactor)
@@ -52,7 +53,7 @@ class ACO:
         #the path created by a given ant
         path = []
         #the nodes that have not yet been visited by the ant
-        unvisitedNodes = self.problem
+        unvisitedNodes = self.problem[2:]
         print(unvisitedNodes)
         for node in range(len(self.problem)):
             if len(path) > 0:
@@ -62,7 +63,7 @@ class ACO:
                 nextNode = self.getNextNode(unvisitedNodes,currentNode)
                 print(nextNode)
             else:
-                nextNode = unvisitedNodes[2]
+                nextNode = unvisitedNodes[0]
             path += [nextNode]
             unvisitedNodes.remove(nextNode)
         if self.isACS:
@@ -72,6 +73,7 @@ class ACO:
     #for a given point in a path, get the next node that the ant should visit
     def getNextNode(self,unvisitedNodes,currentNode=None):
         node = 0
+        sumProbs = 0
         if currentNode == None:
             #randomly generate starting node index
             startIndex = random.randrange(0,len(self.problem))
@@ -86,9 +88,12 @@ class ACO:
                 val = t**self.alpha * (1/distance)**self.beta
                 probs += [val]
             #normalizeRanges so all values are between 0 and 1
-            sum = sum(probs)
-            probs += [i/sum for i in probs]
-            node = np.random.choice(unvisitedNodes, 1, p=probs)
+            sumProbs = sum(probs)
+            print(sumProbs)
+            probs += [i/sumProbs for i in probs]
+            indexList = [item[0] for item in unvisitedNodes]
+            print(len(indexList))
+            node = np.random.choice(indexList, 1, p=probs)
             return node
 
     def getPhermone(self,node1,node2):
