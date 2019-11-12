@@ -90,11 +90,16 @@ class ACO:
                 if r < self.q0:
                     bestNode = None
                     bestVal = 0
+                    previousNode = None
                     for unvisitedNode in unvisitedNodes:
                         if bestNode == None:
                             bestNode = unvisitedNode
                         else:
-                            val = 
+                            val = self.getPhermone(previousNode,unvisitedNode)*(1/self.getDistance(currentNode,unvisitedNode))**self.beta
+                            if val > bestVal:
+                                bestVal = val
+                                bestNode = unvisitedNode
+                        previousNode = unvisitedNode
 
             #build ranges of proabilities for picking each node
             probs=[]
