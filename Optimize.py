@@ -50,7 +50,7 @@ class Optimize:
     def run(self):
         self.readProblem()
         aco = ACO(self.algorithm,self.numAnts,self.numIter,self.aplha,self.beta,self.rho,self.elitismFactor,self.epsilon,self.tao0,self.q0,self.problem)
-        solution = aco.solve()
+        solution,solutionCost = aco.solve()
 
 #Get Terminal Input
 algorithm = sys.argv[1]
