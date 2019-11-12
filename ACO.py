@@ -100,6 +100,7 @@ class ACO:
                                 bestVal = val
                                 bestNode = unvisitedNode
                         previousNode = unvisitedNode
+                    return bestNode
 
             #build ranges of proabilities for picking each node
             probs=[]
