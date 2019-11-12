@@ -132,7 +132,7 @@ class ACO:
             else:
                 tCurrent = self.getPhermone(previousNode,node)
                 t = (1-self.rho)*tCurrent + self.rho*self.cost.getCost(bestPath)
-
+                self.setPhermone(previousNode,node,t)
 
     def getBestPath(self,paths):
         lowestCost = 1000000000000
