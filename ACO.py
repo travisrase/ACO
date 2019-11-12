@@ -38,6 +38,7 @@ class ACO:
         #initialize the phermone matrix
         self.initPhermoneMatrix()
         i = 0
+        
         while (i < self.numIter):
             paths = []
             for ant in range(self.numAnts):
@@ -53,7 +54,8 @@ class ACO:
         #the path created by a given ant
         path = []
         #the nodes that have not yet been visited by the ant
-        unvisitedNodes = self.problem
+        unvisitedNodes = self.problem[:]
+        print(unvisitedNodes)
         for node in range(len(self.problem)):
             if len(path) > 0:
                 currentNode = path[-1]
