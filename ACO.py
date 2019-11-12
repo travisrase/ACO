@@ -41,8 +41,8 @@ class ACO:
             for ant in range(self.numAnts):
                 path = self.buildPath()
                 paths += [path]
+            self.bestPath = self.getBestPath(paths)
             self.updatePhermones(paths)
-
 
     #build a path for a given ant
     def buildPath(self):
@@ -56,7 +56,7 @@ class ACO:
             path += [nextNode]
             unvisitedNodes.remove(nextNode)
         if self.isACS:
-
+            self.localPhermoneUpdate(path)
         return path
 
     #for a given point in a path, get the next node that the ant should visit
@@ -143,6 +143,16 @@ class ACO:
         else:
             self.updatePhermonesElitist(paths)
 
+    def localPhermoneUpdate(self,path):
+        previousNode = None
+        for node in path:
+            if previousNode == None:
+                previousNode = node
+            else:
+                tCurrent = self.getPhermone(previousNode,node)
+                t = (1-self.epsilon)*tCurrent + self.epsilon * self.tao0
+                self.setPhermone(previousNode,node,t)
+                previousNode = node
 
     def updatePhermonesElitist(self,paths):
         # Loop through pheremone matrix
@@ -158,7 +168,26 @@ class ACO:
                 self.pheremoneMatrix[row][col] = updateValue
 
     def updatePhermonesACS(self,paths):
-        print()
+        bestPath = self.getBestPath()
+        costBestPath = self.cost.getCost(tCurrent)
+        previousNode = None
+        for node in bestPath:
+            if previousNode == None:
+                previousNode = node
+            else:
+                tCurrent = self.getPhermone(previousNode,node)
+                t = (1-self.rho)*tCurrent + self.rho*self.cost.getCost(bestPath)
+
+
+    def getBestPath(self,paths):
+        lowestCost = 1000000000000
+        bestPath = []
+        for path in paths:
+            cost = cost.getCost(path)
+            if cost < lowestCost:
+                lowestCost = cost
+                bestPath = path
+        return bestPath
 
     #helpers
     def getDistance(self,node1,node2):
