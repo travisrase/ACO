@@ -66,65 +66,20 @@ class ACO:
             #randomly generate starting node index
             startIndex = random.randrange(0,len(self.problem))
             node = unvisitedNodes.remove(startIndex)
+            return node
         else:
-            #ACS
-            if (self.algorithm == "a"):
-                node = self.getNextNodeACS(currentNode,unvisitedNodes)
-            #Elitist
-            else:
-                node = self.getNextNodeElitist(currentNode,unvisitedNodes)
-        return node
-
-    def getNextNodeElitist(self,path,unvisitedNodes):
-        #init probabilities list
-        probabilitiesList = []
-        indexList = []
-        # all unvisited nodes
-        #Get all unvisited node Sum
-        for unvisited in unvisitedNodes:
-            # Get the pheramone concetration
-            phermone = self.pheremoneMatrix[path[0]][unvisited[0]]
-           # Calc distance between node i and node j
-            dist = self.cost.getCost(path, node)
-            # Probability update divisor
-            sumUnvisited += (pow(phermone, self.alpha) * pow(1/dist, self.beta))
-       # Loop through again to get the probabilities for each unvisited node
-        for node in unvisitedNodes:
-            phermone = self.pheremoneMatrix[path[0]][node[0]]
-            dist = self.cost.getCost(path, node)
-            # Get the probability of the unvisited node being chosen according to elite rule
-            nodeProbability = (pow(phermone, self.alpha) * pow(1/dist, self.beta))/ sumUnvisited
-           # Get tuple containing node index and the probability of being chosen
-            nodeTuple = (node[0], nodeProbability)
-            # Add probability tuple to the list of probabilities
-            indexList.append(node[0])
-            probabilitiesList.append(nodeProbability)
-        nodeIndex = np.random.choice(indexList, probabilitiesList) 
-        return [i for i, v in enumerate(unvisitedNodes) if v[0] == nodeIndex]
-
-    def getNextNodeACS(self,currentNode,unvisitedNodes):
-        #build ranges of proabilities for picking each node
-        probabilityRanges=[0]
-        for unvisitedNode in unvisitedNodes:
-            t = self.getPhermone(currentNode,unvisitedNode)
-            distance = self.getDistance(currentNode,unvisitedNode)
-            val = t * (1/distance)
-            probabilityRanges += [probabilityRanges[-1] + val]
-
-        #normalizeRanges so all values are between 0 and 1
-        sum = sum(probabilityRanges)
-        normalizedRanges = [i/sum for i in probabilityRanges]
-        #generate random number between 0 and 1
-        r = random.random()
-        #iterate through ranges to see where the value falls
-        for j in range(normalizedRanges):
-            if r > normalizedRanges[j]:
-                continue
-            else:
-                #range found, return the unvisited node at j-1
-                #this node corresponds with range associated
-                #with the random number found
-                return unvisitedNodes[j-1]
+            #build ranges of proabilities for picking each node
+            probs=[0]
+            for unvisitedNode in unvisitedNodes:
+                t = self.getPhermone(currentNode,unvisitedNode)
+                distance = self.getDistance(currentNode,unvisitedNode)
+                val = t**self.alpha * (1/distance)**self.beta
+                probs += [val]
+            #normalizeRanges so all values are between 0 and 1
+            sum = sum(probs)
+            probs += [i/sum for i in probs]
+            node = np.random.choice(unvisitedNodes, 1, p=probs)
+            return node
 
     def getPhermone(self,node1,node2):
         a = node1[0]
@@ -138,7 +93,7 @@ class ACO:
         self.phermoneMatrix[b,a] = val
 
     def updatePhermones(self,paths):
-        if (self.algorithm == "a"):
+        if (self.isACS):
             self.updatePhermonesACS(paths)
         else:
             self.updatePhermonesElitist(paths)
@@ -162,14 +117,14 @@ class ACO:
                 #Get the corresponing nodes for given path
                 node1 = [x[0] for x in paths].index(row)
                 node2 = [x[0] for x in paths].index(col)
-                #Apply pheremone update rule according to Elitism 
+                #Apply pheremone update rule according to Elitism
                 updateValue = (1-self.rho)*pheremoneMatrix[row][col] + (1/self.getDistance(node1, node2)) + self.elitismFactor*(self.bestPath)
-                # Update pheremone matrix 
+                # Update pheremone matrix
                 self.pheremoneMatrix[row][col] = updateValue
 
     def updatePhermonesACS(self,paths):
-        bestPath = self.getBestPath()
-        costBestPath = self.cost.getCost(tCurrent)
+        bestPath = self.getBestPath(paths)
+        costBestPath = self.cost.getCost(bestPath)
         previousNode = None
         for node in bestPath:
             if previousNode == None:
@@ -183,7 +138,7 @@ class ACO:
         lowestCost = 1000000000000
         bestPath = []
         for path in paths:
-            cost = cost.getCost(path)
+            cost = self.cost.getCost(path)
             if cost < lowestCost:
                 lowestCost = cost
                 bestPath = path

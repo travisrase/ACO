@@ -1,6 +1,6 @@
 import math
 class Cost:
-    def getCost(solution):
+    def getCost(self,solution):
         cost = 0
         previousNode = None
         for node in solution:
