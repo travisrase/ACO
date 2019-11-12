@@ -85,6 +85,17 @@ class ACO:
             node = unvisitedNodes(startIndex)
             return node
         else:
+            if self.isACS:
+                r = random.random()
+                if r < self.q0:
+                    bestNode = None
+                    bestVal = 0
+                    for unvisitedNode in unvisitedNodes:
+                        if bestNode == None:
+                            bestNode = unvisitedNode
+                        else:
+                            val = 
+
             #build ranges of proabilities for picking each node
             probs=[]
             for unvisitedNode in unvisitedNodes:
