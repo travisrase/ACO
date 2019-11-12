@@ -33,7 +33,7 @@ class ACO:
     It is currently all 0's"""
     def initPhermoneMatrix(self):
         #init n x n 2d array where n = size of the problem
-        self.phermoneMatrix = np.zeros((len(self.problem),len(self.problem)))
+        self.phermoneMatrix = np.full((len(self.problem),len(self.problem)), self.tao0)
 
     def solve(self):
         #initialize the phermone matrix
@@ -45,9 +45,10 @@ class ACO:
                 path = self.buildPath()
                 self.ants += path
                 paths += [path]
-            self.bestPath = self.getBestPath(paths)
+            if self.cost.getCost(self.getBestPath(paths)) < self.cost.getCost(self.bestPath) or len(self.bestPath) == 0:
+                self.bestPath = self.getBestPath(paths)
             self.updatePhermones(paths)
-
+            print(self.cost.getCost(self.bestPath))
     #build a path for a given ant
     def buildPath(self):
         #the path created by a given ant
@@ -59,6 +60,8 @@ class ACO:
                 currentNode = path[-1]
                 # PROBLEM WITH FILE? PROBLEM FOR FIRST TWO INDEX
                 nextNode = self.getNextNode(unvisitedNodes,currentNode)
+                if nextNode == None:
+                    break
             else:
                 nextNode = unvisitedNodes[0]
             path += [nextNode]
@@ -71,24 +74,29 @@ class ACO:
     def getNextNode(self,unvisitedNodes,currentNode=None):
         node = 0
         sumProbs = 0
+        if len(unvisitedNodes) == 0:
+            return None
         if currentNode == None:
             #randomly generate starting node index
             startIndex = random.randrange(0,len(self.problem))
-            node = unvisitedNodes.remove(startIndex)
+            node = unvisitedNodes(startIndex)
             return node
         else:
             #build ranges of proabilities for picking each node
             probs=[]
             for unvisitedNode in unvisitedNodes:
-                t = self.getPhermone(currentNode,unvisitedNode)
+                t = self.getPhermone(currentNode,unvisitedNode)  
                 distance = self.getDistance(currentNode,unvisitedNode)
-                val = t**self.alpha * (1/distance)**self.beta
+                if distance != 0:
+                    val = t**self.alpha * (1/distance)**self.beta
+                else:
+                    val = 0
                 probs += [val]
             #normalizeRanges so all values are between 0 and 1
             sumProbs = sum(probs)
-            probs = [i/sumProbs for i in probs]
+            probs = [abs(i/sumProbs) for i in probs]
             indexList = np.arange(0,len(unvisitedNodes),1)
-            index = np.random.choice(indexList, 1, p=probs)
+            index = np.random.choice(indexList,  p=probs)
             return unvisitedNodes[index]
 
     def getPhermone(self,node1,node2):
