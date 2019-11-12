@@ -50,7 +50,7 @@ class ACO:
             self.updatePhermones(paths)
             i += 1
             print(self.cost.getCost(self.bestPath))
-        return bestPath,self.cost.getCost(self.bestPath)
+        return self.bestPath,self.cost.getCost(self.bestPath)
 
     #build a path for a given ant
     def buildPath(self):
@@ -149,15 +149,31 @@ class ACO:
     def updatePhermonesElitist(self,paths):
         # Loop through pheremone matrix
         #Get value at index of row and col
-        for row in self.phermoneMatrix:
-            for col in self.phermoneMatrix:
+        node1=[]
+        node2=[]
+        for row in range(len(self.phermoneMatrix)):
+            for col in range(len(self.phermoneMatrix)):
+                if row != col:
                 #Get the corresponing nodes for given path
-                node1 = [x[0] for x in paths].index(row)
-                node2 = [x[0] for x in paths].index(col)
+                    for elem in self.problem:
+                        if elem[0]-1 == row:
+                            node1 = elem
+                        elif elem[0] - 1 == col:
+                            node2 = elem
+                    prevNode = []
+                    eliteFactor = 0
+                    for node in self.bestPath:
+                        if node == node2 and prevNode == node1:
+                            eliteFactor = (self.getPhermone(prevNode, node) * self.elitismFactor)
+                            print(eliteFactor)
+                        prevNode = node
                 #Apply pheremone update rule according to Elitism
-                updateValue = (1-self.rho)*self.getPhermone(row,col) + (1/self.getDistance(node1, node2)) + self.elitismFactor*(self.bestPath)
+    
+                    updateValue = (1-self.rho)*self.getPhermone(node1,node2) + (1/self.getDistance(node1, node2)) + eliteFactor
                 # Update pheremone matrix
-                self.phermoneMatrix[row][col] = updateValue
+                    self.setPhermone(node1,node2, updateValue)
+
+                
 
     def updatePhermonesACS(self,paths):
         bestPath = self.getBestPath(paths)
