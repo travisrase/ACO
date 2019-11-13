@@ -42,7 +42,6 @@ class ACO:
         #initialize the phermone matrix
         self.initPhermoneMatrix()
         i = 0
-        print("tol: ")
         #make sure i < numIter
         costDictionary = {}
         while (i < self.numIter and self.optimalSolutionLenth/self.cost.getCost(self.bestPath) < self.tolerance):
@@ -61,8 +60,8 @@ class ACO:
             printCost = self.cost.getCost(self.bestPath)
             if printCost not in costDictionary.keys():
                 costDictionary[printCost] = 1
-            elif costDictionary[printCost] > 50:
-                print("Cost: {} was found 50 times. Solver Stoped".format(printCost))
+            elif costDictionary[printCost] > 300:
+                print("Cost: {} was found 100 times. Solver Stoped".format(printCost))
                 return self.bestPath,self.cost.getCost(self.bestPath)
             else:
                 costDictionary[printCost] += 1
@@ -70,8 +69,10 @@ class ACO:
         return self.bestPath,self.cost.getCost(self.bestPath)
 
     def initPhermoneMatrix(self):
+        self.tao0 = 1/(self.cost.Lnn(self.problem) * len(self.problem))
+
         #init n x n 2d array where n = size of the problem
-        self.phermoneMatrix = np.full((len(self.problem),len(self.problem)), 1/self.optimalSolutionLenth)
+        self.phermoneMatrix = np.full((len(self.problem),len(self.problem)), self.tao0)
 
     #build a path for a given ant
     def buildPath(self):

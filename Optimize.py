@@ -40,7 +40,7 @@ class Optimize:
             #some problems have rows with numbers that aren't coordinates
             #makes sure each "row " is the correct length
             if len(cleanRow) > 2:
-                self.problem += [cleanRow]
+                self.problem += [cleanRow] 
 
     def run(self):
         self.readProblem()
