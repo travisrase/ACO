@@ -1,5 +1,6 @@
 import sys
 from ACO import ACO
+import time
 class Optimize:
     def __init__(self,algorithm,numAnts,numIter,problemName,optimalSolutionLenth,tolerance):
         #e for elitist, a for Ant Colony System
@@ -44,11 +45,13 @@ class Optimize:
     def run(self):
         self.readProblem()
         aco = ACO(self.algorithm,self.numAnts,self.numIter,self.problem,self.optimalSolutionLenth,self.tolerance)
+        start_time = time.time()
         solution,solutionCost = aco.solve()
         formatedSol = self.formatSolution(solution)
         print("solution: ", formatedSol)
         print()
         print("solutionCost: ", solutionCost)
+        print("Total Time: {}".format(time.time() - start_time))
 
     def formatSolution(self,solution):
         #just get node number from nodes in solution
