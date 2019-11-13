@@ -1,11 +1,16 @@
 import math
+""" This class is used to compute the cost of a given solution"""
 class Cost:
+    #the get cost method takes a solution as a list of nodes
     def getCost(self,solution):
+        #if it is given an empty solution it returns a very high distance
+        #since we are trying to minimize cost
         if len(solution) == 0:
             return 1000000000000
         else:
             cost = 0
             previousNode = None
+            #iterates through all nodes in solution and 
             for node in solution:
                 if previousNode == None:
                     previousNode = node

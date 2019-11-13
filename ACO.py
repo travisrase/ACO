@@ -71,7 +71,7 @@ class ACO:
 
     def initPhermoneMatrix(self):
         #init n x n 2d array where n = size of the problem
-        self.phermoneMatrix = np.full((len(self.problem),len(self.problem)), self.tao0)
+        self.phermoneMatrix = np.full((len(self.problem),len(self.problem)), 1/self.optimalSolutionLenth)
 
     #build a path for a given ant
     def buildPath(self):
