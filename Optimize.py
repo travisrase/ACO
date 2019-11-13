@@ -51,7 +51,7 @@ class Optimize:
         print("solution: ", formatedSol)
         print()
         print("solutionCost: ", solutionCost)
-        print("Total Time: {}".format(time.time() - start_time))
+        print("Total Time: {} seconds.".format(time.time() - start_time))
 
     def formatSolution(self,solution):
         #just get node number from nodes in solution
