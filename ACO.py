@@ -3,7 +3,7 @@ import random
 from Cost import Cost
 import math
 class ACO:
-    def __init__(self,algorithm, numAnts,numIter,alpha,beta,rho,elitismFactor, epsilon,tao0,q0,problem):
+    def __init__(self,algorithm, numAnts,numIter,problem,optimalSolutionLenth,tolerance):
         #the type of algorithm to use (ACS or Elitist)
         self.isACS = False
         if algorithm == "a":
@@ -13,14 +13,24 @@ class ACO:
         #number of search iterations
         self.numIter = int(numIter)
         #the degree of influence of the phermones
-        self.alpha = float(alpha)
-        self.beta = float(beta)
-        self.rho = float(rho)
-        self.elitismFactor = float(elitismFactor)
-        self.epsilon = float(epsilon)
-        self.tao0 = float(tao0)
-        self.q0 = float(q0)
+        #the degree of influence of the phermones
+        self.alpha = 1.0
+        #the degree of influnece of the hueristic component
+        self.beta = float(2)
+        #phermone evaporation factor
+        self.rho = float(.1)
+        #elitism factor in Elitist Ant System
+        self.elitismFactor = float(30)
+        #wearing away factors
+        self.epsilon = float(.1)
+        self.tao0 = float(.00001)
+        #probability that the ant will choose the best leg for the next leg of the tour
+        self.q0 = float(.9)
         self.problem = problem
+        #the length of the known best solution
+        self.optimalSolutionLenth = float(optimalSolutionLenth)
+        #the tolerance for how close our solution is to the best
+        self.tolerance = float(tolerance)
         #matrix keeping track of phermones between two nodes
         self.phermoneMatrix = []
         #a list of all ant solutions
@@ -28,18 +38,16 @@ class ACO:
         self.cost = Cost()
         self.ants =[]
 
-    """TODO: We need to determine how the phermone matrix should be initialized.
-    It is currently all 0's"""
-    def initPhermoneMatrix(self):
-        #init n x n 2d array where n = size of the problem
-        self.phermoneMatrix = np.full((len(self.problem),len(self.problem)), self.tao0)
-
     def solve(self):
         #initialize the phermone matrix
         self.initPhermoneMatrix()
         i = 0
-        while (i < self.numIter):
+        print("tol: ")
+        #make sure i < numIter
+        while (i < self.numIter and self.optimalSolutionLenth/self.cost.getCost(self.bestPath) < self.tolerance):
+            #store paths created at every iteration
             paths = []
+            #for each ant build a path
             for ant in range(self.numAnts):
                 path = self.buildPath()
                 self.ants += path
@@ -51,6 +59,10 @@ class ACO:
             print("i: ", i)
             print("cost: " , self.cost.getCost(self.bestPath))
         return self.bestPath,self.cost.getCost(self.bestPath)
+
+    def initPhermoneMatrix(self):
+        #init n x n 2d array where n = size of the problem
+        self.phermoneMatrix = np.full((len(self.problem),len(self.problem)), self.tao0)
 
     #build a path for a given ant
     def buildPath(self):
@@ -165,15 +177,14 @@ class ACO:
                     for node in self.bestPath:
                         if node == node2 and prevNode == node1:
                             eliteFactor = (self.getPhermone(prevNode, node) * self.elitismFactor)
-                            print(eliteFactor)
                         prevNode = node
                 #Apply pheremone update rule according to Elitism
-    
+
                     updateValue = (1-self.rho)*self.getPhermone(node1,node2) + (1/self.getDistance(node1, node2)) + eliteFactor
                 # Update pheremone matrix
                     self.setPhermone(node1,node2, updateValue)
 
-                
+
 
     def updatePhermonesACS(self,paths):
         bestPath = self.getBestPath(paths)

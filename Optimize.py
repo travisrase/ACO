@@ -1,55 +1,49 @@
 import sys
 from ACO import ACO
 class Optimize:
-    def __init__(self,algorithm,numAnts,numIter,alpha,beta,rho,elitismFactor,epsilon,tao0,q0,problemName):
+    def __init__(self,algorithm,numAnts,numIter,problemName,optimalSolutionLenth,tolerance):
         #e for elitist, a for Ant Colony System
         self.algorithm = algorithm
         #number of ants in the colony
         self.numAnts = numAnts
         #number of search iterations
         self.numIter = numIter
-        #the degree of influence of the phermones
-        self.aplha = alpha
-        #the degree of influnece of the hueristic component
-        self.beta = beta
-        #phermone evaporation factor
-        self.rho = rho
-        #elitism factor in Elitist Ant System
-        self.elitismFactor = elitismFactor
-        #wearing away factors
-        self.epsilon = epsilon
-        self.tao0 = tao0
-        #probability that the ant will choose the best leg for the next leg of the tour
-        self.q0 = q0
         #the name of the file for the problem
         self.problemName = problemName
         #A list of three tuples of index, xcord, ycord
         self.problem = []
+        #the length of the known best solution
+        self.optimalSolutionLenth = optimalSolutionLenth
+        #the tolerance for how close our solution is to the best
+        self.tolerance = tolerance
 
     def readProblem(self):
         file = open(self.problemName, "r+")
         inp = file.readlines()
+        #cleans the lines
         inp = [line.strip("\n") for line in inp]
         for r in inp:
             cleanRow = []
             row = r.split(" ")
             for num in row:
+                #this catches lines that are not coordinates
                 try:
                     cleanRow += [float(num)]
                 except:
                     continue
             #convert first index to int, since it is not a coordinate
             try:
-
                 cleanRow[0] = int(cleanRow[0])
             except:
                 continue
+            #some problems have rows with numbers that aren't coordinates
+            #makes sure each "row " is the correct length
             if len(cleanRow) > 2:
                 self.problem += [cleanRow]
 
     def run(self):
         self.readProblem()
-        aco = ACO(self.algorithm,self.numAnts,self.numIter,self.aplha,self.beta,self.rho,self.elitismFactor,self.epsilon,self.tao0,self.q0,self.problem)
+        aco = ACO(self.algorithm,self.numAnts,self.numIter,self.problem,self.optimalSolutionLenth,self.tolerance)
         solution,solutionCost = aco.solve()
         formatedSol = self.formatSolution(solution)
         print("solution: ", formatedSol)
@@ -57,8 +51,11 @@ class Optimize:
         print("solutionCost: ", solutionCost)
 
     def formatSolution(self,solution):
+        #just get node number from nodes in solution
         fSolution = [i[0] for i in solution]
+        #look for the index of node 1
         indexOfFirstNode = fSolution.index(1)
+        #order the solytion so node 1 comes first
         orderedSolution = fSolution[indexOfFirstNode:len(fSolution)] + fSolution[0:indexOfFirstNode]
         return orderedSolution
 
@@ -67,14 +64,9 @@ class Optimize:
 algorithm = sys.argv[1]
 numAnts = sys.argv[2]
 numIter = sys.argv[3]
-aplha = sys.argv[4]
-beta = sys.argv[5]
-rho = sys.argv[6]
-elitismFactor = sys.argv[7]
-epsilon = sys.argv[8]
-tao0 = sys.argv[9]
-q0 = sys.argv[10]
-problemName = sys.argv[11]
+problemName = sys.argv[4]
+optimalSolutionLenth = sys.argv[5]
+tolerance = sys.argv[6]
 
-optimize = Optimize(algorithm,numAnts,numIter,aplha,beta,rho,elitismFactor,epsilon,tao0,q0,problemName)
+optimize = Optimize(algorithm,numAnts,numIter,problemName,optimalSolutionLenth,tolerance)
 optimize.run()
