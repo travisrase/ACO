@@ -38,7 +38,6 @@ class ACO:
         #initialize the phermone matrix
         self.initPhermoneMatrix()
         i = 0
-
         while (i < self.numIter):
             paths = []
             for ant in range(self.numAnts):
@@ -49,7 +48,8 @@ class ACO:
                 self.bestPath = self.getBestPath(paths)
             self.updatePhermones(paths)
             i += 1
-            print(self.cost.getCost(self.bestPath))
+            print("i: ", i)
+            print("cost: " , self.cost.getCost(self.bestPath))
         return self.bestPath,self.cost.getCost(self.bestPath)
 
     #build a path for a given ant
@@ -100,7 +100,7 @@ class ACO:
                                 bestVal = val
                                 bestNode = unvisitedNode
                         previousNode = unvisitedNode
-
+                    return bestNode
             #build ranges of proabilities for picking each node
             probs=[]
             for unvisitedNode in unvisitedNodes:
@@ -199,9 +199,15 @@ class ACO:
 
     #helpers
     def getDistance(self,node1,node2):
-        x1 = node1[1]
-        y1 = node1[2]
-        x2 = node2[1]
-        y2 = node2[2]
-        distance = math.sqrt((x2-x1)**2 + (y2-y1)**2)
-        return distance
+        try:
+            x1 = node1[1]
+            y1 = node1[2]
+            x2 = node2[1]
+            y2 = node2[2]
+            distance = math.sqrt(abs((x2-x1)**2 + (y2-y1)**2))
+            if distance == 0:
+                return 0.00001
+            else:
+                return distance
+        except:
+            return 0.00001

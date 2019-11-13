@@ -51,6 +51,17 @@ class Optimize:
         self.readProblem()
         aco = ACO(self.algorithm,self.numAnts,self.numIter,self.aplha,self.beta,self.rho,self.elitismFactor,self.epsilon,self.tao0,self.q0,self.problem)
         solution,solutionCost = aco.solve()
+        formatedSol = self.formatSolution(solution)
+        print("solution: ", formatedSol)
+        print()
+        print("solutionCost: ", solutionCost)
+
+    def formatSolution(self,solution):
+        fSolution = [i[0] for i in solution]
+        indexOfFirstNode = fSolution.index(1)
+        orderedSolution = fSolution[indexOfFirstNode:len(fSolution)] + fSolution[0:indexOfFirstNode]
+        return orderedSolution
+
 
 #Get Terminal Input
 algorithm = sys.argv[1]
