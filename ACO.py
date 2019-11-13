@@ -44,6 +44,7 @@ class ACO:
         i = 0
         print("tol: ")
         #make sure i < numIter
+        costDictionary = {}
         while (i < self.numIter and self.optimalSolutionLenth/self.cost.getCost(self.bestPath) < self.tolerance):
             #store paths created at every iteration
             paths = []
@@ -57,7 +58,15 @@ class ACO:
             self.updatePhermones(paths)
             i += 1
             print("i: ", i)
-            print("cost: " , self.cost.getCost(self.bestPath))
+            printCost = self.cost.getCost(self.bestPath)
+            if printCost not in costDictionary.keys():
+                costDictionary[printCost] = 1
+            elif costDictionary[printCost] > 50:
+                print("Cost: {} was found 50 times. Solver Stoped".format(printCost))
+                return self.bestPath,self.cost.getCost(self.bestPath)
+            else:
+                costDictionary[printCost] += 1
+            print("cost: " , printCost )
         return self.bestPath,self.cost.getCost(self.bestPath)
 
     def initPhermoneMatrix(self):
