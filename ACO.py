@@ -16,16 +16,16 @@ class ACO:
         #the degree of influence of the phermones
         self.alpha = 1.0
         #the degree of influnece of the hueristic component
-        self.beta = float(2)
+        self.beta = float(4)
         #phermone evaporation factor
-        self.rho = float(.1)
+        self.rho = float(.05)
         #elitism factor in Elitist Ant System
-        self.elitismFactor = float(30)
+        self.elitismFactor = float(10)
         #wearing away factors
         self.epsilon = float(.1)
         self.tao0 = float(.00001)
         #probability that the ant will choose the best leg for the next leg of the tour
-        self.q0 = float(.9)
+        self.q0 = float(.85)
         self.problem = problem
         #the length of the known best solution
         self.optimalSolutionLenth = float(optimalSolutionLenth)
@@ -171,28 +171,37 @@ class ACO:
     def updatePhermonesElitist(self,paths):
         # Loop through pheremone matrix
         #Get value at index of row and col
-        node1=[]
-        node2=[]
-        for row in range(len(self.phermoneMatrix)):
-            for col in range(len(self.phermoneMatrix)):
-                if row != col:
-                #Get the corresponing nodes for given path
-                    for elem in self.problem:
-                        if elem[0]-1 == row:
-                            node1 = elem
-                        elif elem[0] - 1 == col:
-                            node2 = elem
-                    prevNode = []
-                    eliteFactor = 0
-                    for node in self.bestPath:
-                        if node == node2 and prevNode == node1:
-                            eliteFactor = (self.getPhermone(prevNode, node) * self.elitismFactor)
-                        prevNode = node
+        # node1=[]
+        # node2=[]
+        # for row in range(len(self.phermoneMatrix)):
+        #     for col in range(len(self.phermoneMatrix)):
+        #         if row != col:
+        #         #Get the corresponing nodes for given path
+        #             for elem in self.problem:
+        #                 if elem[0]-1 == row:
+        #                     node1 = elem
+        #                 elif elem[0] - 1 == col:
+        #                     node2 = elem
+        #             prevNode = []
+        #             eliteFactor = 0
+        #             for node in self.bestPath:
+        #                 if node == node2 and prevNode == node1:
+        #                     eliteFactor = (self.getPhermone(prevNode, node) * self.elitismFactor)
+        #                 prevNode = node
+
+        bestPathDict = self.getBestPathDict(self.bestPath)
+        for key in bestPathDict.keys():
+            twoCities = key.split(',')
+            legDistance = self.getDistance(twoCities[0], twoCities[1])
+            legPheromoneVal = self.getPhermone(twoCities[0], twoCities[1])
+            eliteFactor = (legPheromoneVal) * self.elitismFactor
+            updateValue = (1-self.rho)* legPheromoneVal + (1/legDistance) + eliteFactor
+            self.setPhermone(twoCities[0], twoCities[1], updateValue)
                 #Apply pheremone update rule according to Elitism
 
-                    updateValue = (1-self.rho)*self.getPhermone(node1,node2) + (1/self.getDistance(node1, node2)) + eliteFactor
+                #    updateValue = (1-self.rho)*self.getPhermone(node1,node2) + (1/self.getDistance(node1, node2)) + eliteFactor
                 # Update pheremone matrix
-                    self.setPhermone(node1,node2, updateValue)
+                    #self.setPhermone(node1,node2, updateValue)
 
 
 
@@ -217,6 +226,23 @@ class ACO:
                 lowestCost = cost
                 bestPath = path
         return bestPath
+
+    def getBestPathDict(self, bestPath):
+        bestPathDict = {}
+        frontPheromoneValue = 0
+        for i in range(0, len(bestPath), 2):
+            backPheromoneValue = self.getPhermone(bestPath[i - 1], bestPath[i])
+            backLegKey = str(i - 1) + "," + str(i)
+            bestPathDict.update({backLegKey : backPheromoneValue})
+            try:
+                frontPheromoneValue = self.getPhermone(bestPath[i], bestPath[i + 1])
+                frontLegKey = str(i) + "," + str(i + 1)
+                bestPathDict.update({frontLegKey : frontPheromoneValue})
+            except:
+                frontPheromoneValue = self.getPhermone(bestPath[i], bestPath[0])
+                frontLegKey = str(i) + "," + str(0)
+                bestPathDict.update({frontLegKey : frontPheromoneValue})
+        return bestPathDict
 
     #helpers
     def getDistance(self,node1,node2):
