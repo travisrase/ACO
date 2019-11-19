@@ -34,38 +34,42 @@ class ACO:
         self.phermoneMatrix = []
         #a list of all ant solutions
         self.bestPath = []
+        self.bestPathCost = 100000000000
         self.bestPathMatrix = []
         self.cost = Cost()
-        self.ants =[]
+        self.iterationsSinceCostUpdate = 0
 
     def solve(self):
         #initialize the phermone matrix
         self.initPhermoneMatrix()
         i = 0
         #make sure i < numIter
-        costDictionary = {}
         while (i < self.numIter and self.optimalSolutionLenth/self.cost.getCost(self.bestPath) < self.tolerance):
             #store paths created at every iteration
             paths = []
             #for each ant build a path
             for ant in range(self.numAnts):
+                #build a path
                 path = self.buildPath()
-                self.ants += path
                 paths += [path]
-            if self.cost.getCost(self.getBestPath(paths)) < self.cost.getCost(self.bestPath) or len(self.bestPath) == 0:
+            #update best path and best path cost
+            localBestPath = self.getBestPath(paths)
+            localBestPathCost = self.cost.getCost(localBestPath)
+            if localBestPathCost < self.bestPathCost or len(self.bestPath) == 0:
                 self.bestPath = self.getBestPath(paths)
+                self.bestPathCost = localBestPathCost
+                self.iterationsSinceCostUpdate = 0
+            else:
+                self.iterationsSinceCostUpdate += 1
+            #check to see how many iterations since the minimum value found has been updated
+            if (self.iterationsSinceCostUpdate >= 50):
+                break
+            #update phermones
             self.updatePhermones(paths)
+            #update iterations
             i += 1
             print("i: ", i)
-            printCost = self.cost.getCost(self.bestPath)
-            if printCost not in costDictionary.keys():
-                costDictionary[printCost] = 1
-            elif costDictionary[printCost] > 300:
-                print("Cost: {} was found 50 times. Solver Stoped".format(printCost))
-                return self.bestPath,self.cost.getCost(self.bestPath)
-            else:
-                costDictionary[printCost] += 1
-            print("cost: " , printCost )
+            print("Best Path Cost: ", self.bestPathCost)
         return self.bestPath,self.cost.getCost(self.bestPath)
 
     def initPhermoneMatrix(self):
@@ -190,8 +194,6 @@ class ACO:
                 # Update pheremone matrix
                     self.setPhermone(node1,node2, updateValue)
 
-
-
     def updatePhermonesACS(self,paths):
         bestPath = self.getBestPath(paths)
         costBestPath = self.cost.getCost(bestPath)
@@ -227,6 +229,7 @@ class ACO:
                 index2 = node[0]
                 matrix[index1-1][index2-1] = 1
         return matrix
+
     #helpers
     def getDistance(self,node1,node2):
         try:
