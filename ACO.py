@@ -184,7 +184,7 @@ class ACO:
                     prevNode = []
                     eliteFactor = 0
                     if self.bestPathMatrix[row][col] != 0:
-                        eliteFactor = (self.bestPathMatrix[row][col] * self.elitismFactor)
+                        eliteFactor = (self.phermoneMatrix[row][col] * self.elitismFactor)
                 #Apply pheremone update rule according to Elitism
                     updateValue = (1-self.rho)*self.getPhermone(node1,node2) + (1/self.getDistance(node1, node2)) + eliteFactor
                 # Update pheremone matrix
@@ -212,9 +212,21 @@ class ACO:
             if cost < lowestCost:
                 lowestCost = cost
                 bestPath = path
+        self.bestPathMatrix = self.buildPathMatrix(bestPath)
         return bestPath
 
-    
+    def buildPathMatrix(self,path):
+        lengthPath = len(path)
+        matrix = np.zeros((lengthPath,lengthPath))
+        previousNode = path[0]
+        for node in path:
+            if node == previousNode:
+                continue
+            else:
+                index1 = previousNode[0]
+                index2 = node[0]
+                matrix[index1-1][index2-1] = 1
+        return matrix
     #helpers
     def getDistance(self,node1,node2):
         try:
