@@ -188,15 +188,16 @@ class ACO:
         #                 if node == node2 and prevNode == node1:
         #                     eliteFactor = (self.getPhermone(prevNode, node) * self.elitismFactor)
         #                 prevNode = node
-
-        bestPathDict = self.getBestPathDict(self.bestPath)
+        #print("best path: ")
+        #print(self.bestPath)
+        bestPathDict = self.getBestPathDict()
         for key in bestPathDict.keys():
             twoCities = key.split(',')
-            legDistance = self.getDistance(twoCities[0], twoCities[1])
-            legPheromoneVal = self.getPhermone(twoCities[0], twoCities[1])
+            legDistance = self.getDistance(self.bestPath[int(twoCities[0])], self.bestPath[int(twoCities[1])])
+            legPheromoneVal = self.getPhermone(self.bestPath[int(twoCities[0])], self.bestPath[int(twoCities[1])])
             eliteFactor = (legPheromoneVal) * self.elitismFactor
             updateValue = (1-self.rho)* legPheromoneVal + (1/legDistance) + eliteFactor
-            self.setPhermone(twoCities[0], twoCities[1], updateValue)
+            self.setPhermone(self.bestPath[int(twoCities[0])], self.bestPath[int(twoCities[1])], updateValue)
                 #Apply pheremone update rule according to Elitism
 
                 #    updateValue = (1-self.rho)*self.getPhermone(node1,node2) + (1/self.getDistance(node1, node2)) + eliteFactor
@@ -227,19 +228,22 @@ class ACO:
                 bestPath = path
         return bestPath
 
-    def getBestPathDict(self, bestPath):
+    def getBestPathDict(self):
         bestPathDict = {}
         frontPheromoneValue = 0
-        for i in range(0, len(bestPath), 2):
-            backPheromoneValue = self.getPhermone(bestPath[i - 1], bestPath[i])
-            backLegKey = str(i - 1) + "," + str(i)
-            bestPathDict.update({backLegKey : backPheromoneValue})
+        for i in range(0, len(self.bestPath), 2):
+            backPheromoneValue = self.getPhermone(self.bestPath[i - 1], self.bestPath[i])
+            if (i >= 2):
+                backLegKey = str(i - 1) + "," + str(i)
+                bestPathDict.update({backLegKey : backPheromoneValue})
+            else:
+                backLegKey = str(len(self.bestPath) - 1) + "," + str(i)
             try:
-                frontPheromoneValue = self.getPhermone(bestPath[i], bestPath[i + 1])
+                frontPheromoneValue = self.getPhermone(self.bestPath[i], self.bestPath[i + 1])
                 frontLegKey = str(i) + "," + str(i + 1)
                 bestPathDict.update({frontLegKey : frontPheromoneValue})
             except:
-                frontPheromoneValue = self.getPhermone(bestPath[i], bestPath[0])
+                frontPheromoneValue = self.getPhermone(self.bestPath[i], self.bestPath[0])
                 frontLegKey = str(i) + "," + str(0)
                 bestPathDict.update({frontLegKey : frontPheromoneValue})
         return bestPathDict
