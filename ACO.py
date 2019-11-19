@@ -13,19 +13,18 @@ class ACO:
         #number of search iterations
         self.numIter = int(numIter)
         #the degree of influence of the phermones
-        #the degree of influence of the phermones
         self.alpha = 1.0
         #the degree of influnece of the hueristic component
-        self.beta = float(2)
+        self.beta = float(4)
         #phermone evaporation factor
-        self.rho = float(.1)
+        self.rho = float(.05)
         #elitism factor in Elitist Ant System
-        self.elitismFactor = float(30)
+        self.elitismFactor = float(10)
         #wearing away factors
         self.epsilon = float(.1)
         self.tao0 = float(.00001)
         #probability that the ant will choose the best leg for the next leg of the tour
-        self.q0 = float(.9)
+        self.q0 = float(.85)
         self.problem = problem
         #the length of the known best solution
         self.optimalSolutionLenth = float(optimalSolutionLenth)
@@ -35,6 +34,7 @@ class ACO:
         self.phermoneMatrix = []
         #a list of all ant solutions
         self.bestPath = []
+        self.bestPathMatrix = []
         self.cost = Cost()
         self.ants =[]
 
@@ -61,7 +61,7 @@ class ACO:
             if printCost not in costDictionary.keys():
                 costDictionary[printCost] = 1
             elif costDictionary[printCost] > 300:
-                print("Cost: {} was found 100 times. Solver Stoped".format(printCost))
+                print("Cost: {} was found 50 times. Solver Stoped".format(printCost))
                 return self.bestPath,self.cost.getCost(self.bestPath)
             else:
                 costDictionary[printCost] += 1
@@ -70,7 +70,6 @@ class ACO:
 
     def initPhermoneMatrix(self):
         self.tao0 = 1/(self.cost.Lnn(self.problem) * len(self.problem))
-
         #init n x n 2d array where n = size of the problem
         self.phermoneMatrix = np.full((len(self.problem),len(self.problem)), self.tao0)
 
@@ -184,12 +183,9 @@ class ACO:
                             node2 = elem
                     prevNode = []
                     eliteFactor = 0
-                    for node in self.bestPath:
-                        if node == node2 and prevNode == node1:
-                            eliteFactor = (self.getPhermone(prevNode, node) * self.elitismFactor)
-                        prevNode = node
+                    if self.bestPathMatrix[row][col] != 0:
+                        eliteFactor = (self.bestPathMatrix[row][col] * self.elitismFactor)
                 #Apply pheremone update rule according to Elitism
-
                     updateValue = (1-self.rho)*self.getPhermone(node1,node2) + (1/self.getDistance(node1, node2)) + eliteFactor
                 # Update pheremone matrix
                     self.setPhermone(node1,node2, updateValue)
@@ -218,6 +214,7 @@ class ACO:
                 bestPath = path
         return bestPath
 
+    
     #helpers
     def getDistance(self,node1,node2):
         try:
