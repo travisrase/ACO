@@ -101,28 +101,29 @@ class ACO:
             r = random.random()
             #with some probability select the next node greedily
             if r < self.q0:
-                return self.getNextNodeGreedy(unvisitedNodes)
+                return self.getNextNodeGreedy(unvisitedNodes,currentNode)
         #build ranges of proabilities for picking each node
         probabilities = self.getProbabilities(currentNode, unvisitedNodes)
         indexList = np.arange(0,len(unvisitedNodes),1)
         index = np.random.choice(indexList, p=probabilities)
         return unvisitedNodes[index]
 
-    def getNextNodeGreedy(self,unvisitedNodes):
+    def getNextNodeGreedy(self,unvisitedNodes,currentNode):
         bestNode = None
         bestVal = 0
-        previousNode = None
+        #previousNode = None
         for unvisitedNode in unvisitedNodes:
             if bestNode == None:
-                bestNode = unvisitedNode
+                t = self.Phermones.getPhermone(currentNode,unvisitedNode)
+                distance = self.cost.getDistance(currentNode,unvisitedNode)
+                bestVal = t*(1/distance)**self.beta
             else:
-                t = self.Phermones.getPhermone(previousNode,unvisitedNode)
-                distance = self.cost.getDistance(previousNode,unvisitedNode)
+                t = self.Phermones.getPhermone(currentNode,unvisitedNode)
+                distance = self.cost.getDistance(currentNode,unvisitedNode)
                 val = t*(1/distance)**self.beta
                 if val > bestVal:
                     bestVal = val
                     bestNode = unvisitedNode
-            previousNode = unvisitedNode
         return bestNode
 
     def getProbabilities(self,currentNode, unvisitedNodes):
