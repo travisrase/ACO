@@ -74,7 +74,6 @@ class Phermone:
             if node == previousNode:
                 continue
             else:
-                print("BEST PATH HIT")
                 currentPhermone = self.getPhermone(previousNode, node)
                 newPhermoneValue = currentPhermone + (1/bestPathCost) * self.elitismFactor
                 self.setPhermone(previousNode,node,newPhermoneValue)
@@ -102,6 +101,4 @@ class Phermone:
                 index1 = previousNode[0]
                 index2 = node[0]
                 matrix[index1-1][index2-1] = 1
-
-        #print("Path MAtrix: ",len(matrix))
         return matrix

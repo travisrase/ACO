@@ -14,11 +14,11 @@ class ACO:
         #number of search iterations
         self.numIter = int(numIter)
         #the degree of influence of the phermones
-        self.alpha = float(2.0)
+        self.alpha = float(1.0)
         #the degree of influnece of the hueristic component
-        self.beta = float(4)
+        self.beta = float(2)
         #probability that the ant will choose the best leg for the next leg of the tour
-        self.q0 = float(.85)
+        self.q0 = float(.9)
         self.problem = problem
         #the length of the known best solution
         self.optimalSolutionLenth = float(optimalSolutionLenth)
@@ -46,16 +46,16 @@ class ACO:
                 path = self.buildPath()
                 paths += [path]
             #update best path and best path cost
-            localBestPath = self.cost.getBestPath(paths)
-            localBestPathCost = self.cost.getCost(localBestPath)
-            if localBestPathCost < self.bestPathCost or len(self.bestPath) == 0:
-                self.bestPath = self.cost.getBestPath(paths)
-                self.bestPathCost = localBestPathCost
+            newBestPath = self.cost.getBestPath(paths)
+            newBestPathCost = self.cost.getCost(newBestPath)
+            if newBestPathCost < self.bestPathCost or len(self.bestPath) == 0:
+                self.bestPath = newBestPath
+                self.bestPathCost = newBestPathCost
                 self.iterationsSinceCostUpdate = 0
             else:
                 self.iterationsSinceCostUpdate += 1
             #check to see how many iterations since the minimum value found has been updated
-            if (self.iterationsSinceCostUpdate >= 50):
+            if (self.iterationsSinceCostUpdate >= 80):
                 break
             #update phermones
             self.Phermones.updatePhermones(paths)
@@ -117,16 +117,10 @@ class ACO:
             else:
                 t = self.Phermones.getPhermone(currentNode,unvisitedNode)
                 distance = self.cost.getDistance(currentNode,unvisitedNode)
-                # print("node: ", unvisitedNode)
                 val = t*(1/distance)**self.beta
-                # print("val: ", val)
                 if val > bestVal:
                     bestVal = val
                     bestNode = unvisitedNode
-        # print("-----")
-        # print("currentNode: ", currentNode)
-        # print("unvisitedNodes: ", unvisitedNodes)
-        # print("selectedNode: ", bestNode)
         return bestNode
 
     def getProbabilities(self,currentNode, unvisitedNodes):
