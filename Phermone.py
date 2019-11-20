@@ -102,6 +102,6 @@ class Phermone:
                 index1 = previousNode[0]
                 index2 = node[0]
                 matrix[index1-1][index2-1] = 1
-        
+
         #print("Path MAtrix: ",len(matrix))
         return matrix

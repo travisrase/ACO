@@ -2,6 +2,9 @@ import math
 import numpy as np
 """ This class is used to compute the cost of a given solution"""
 class Cost:
+    def __init__(self):
+        self.bestPathCost = 1000000000000
+        self.bestPath = []
     #the get cost method takes a solution as a list of nodes
     def getCost(self,solution):
         #if it is given an empty solution it returns a very high distance
@@ -43,7 +46,10 @@ class Cost:
             if cost < lowestCost:
                 lowestCost = cost
                 bestPath = path
-        return bestPath
+        if lowestCost < self.bestPathCost:
+            self.bestPathCost = lowestCost
+            self.bestPath = bestPath
+        return self.bestPath
 
     def Lnn(self,problem):
         problem = list(problem)

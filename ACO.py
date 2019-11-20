@@ -131,7 +131,6 @@ class ACO:
 
     def getProbabilities(self,currentNode, unvisitedNodes):
         probs=[]
-        print(currentNode)
         for unvisitedNode in unvisitedNodes:
             phermone = self.Phermones.getPhermone(currentNode,unvisitedNode)
             distance = self.cost.getDistance(currentNode,unvisitedNode)
