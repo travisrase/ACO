@@ -9,7 +9,7 @@ class Phermone:
         self.lenProblem = len(problem)
         self.problem = problem
         self.tao0 = 0
-        self.epsilon = float(1)
+        self.epsilon = float(.1)
         self.rho = float(.2)
         self.elitismFactor = float(1)
         self.phermoneMatrix = []
@@ -17,10 +17,10 @@ class Phermone:
         self.cost = Cost()
 
     def initPhermones(self):
-        "TODO"
-        self.tao0 = 1/(self.cost.Lnn(self.problem)) * self.lenProblem
+        self.tao0 = 1/((self.cost.Lnn(self.problem)) * self.lenProblem)
         #init n x n 2d array where n = size of the problem
         self.phermoneMatrix = np.full((self.lenProblem,self.lenProblem), self.tao0)
+        print(self.phermoneMatrix)
 
     def getPhermone(self,node1,node2):
         a = node1[0]-1
@@ -84,7 +84,7 @@ class Phermone:
                 previousNode = node
             else:
                 tCurrent = self.getPhermone(previousNode,node)
-                t = (1-self.rho)*tCurrent + self.rho*self.cost.getCost(bestPath)
+                t = (1-self.rho)*tCurrent + self.rho*(1/self.cost.getCost(bestPath))
                 self.setPhermone(previousNode,node,t)
 
     def buildPathMatrix(self,path):

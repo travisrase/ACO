@@ -14,7 +14,7 @@ class ACO:
         #number of search iterations
         self.numIter = int(numIter)
         #the degree of influence of the phermones
-        self.alpha = 1.0
+        self.alpha = float(1.0)
         #the degree of influnece of the hueristic component
         self.beta = float(4)
         #probability that the ant will choose the best leg for the next leg of the tour
@@ -42,7 +42,6 @@ class ACO:
             paths = []
             #for each ant build a path
             for ant in range(self.numAnts):
-                print("ant: ", ant)
                 #build a path
                 path = self.buildPath()
                 paths += [path]
@@ -118,16 +117,16 @@ class ACO:
             else:
                 t = self.Phermones.getPhermone(currentNode,unvisitedNode)
                 distance = self.cost.getDistance(currentNode,unvisitedNode)
-                print("node: ", unvisitedNode)
+                # print("node: ", unvisitedNode)
                 val = t*(1/distance)**self.beta
-                print("val: ", val)
+                # print("val: ", val)
                 if val > bestVal:
                     bestVal = val
                     bestNode = unvisitedNode
-        print("-----")
-        print("currentNode: ", currentNode)
-        print("unvisitedNodes: ", unvisitedNodes)
-        print("selectedNode: ", bestNode)
+        # print("-----")
+        # print("currentNode: ", currentNode)
+        # print("unvisitedNodes: ", unvisitedNodes)
+        # print("selectedNode: ", bestNode)
         return bestNode
 
     def getProbabilities(self,currentNode, unvisitedNodes):
