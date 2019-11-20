@@ -72,14 +72,13 @@ class Phermone:
 
         bestPathCost = self.cost.getCost(bestPath)
         previousNode = bestPath[0]
-        # for node in bestPath:
-        #     if node == previousNode:
-        #         continue
-        #     else:
-        #         print("BEST PATH HIT")
-        #         currentPhermone = self.getPhermone(previousNode, node)
-        #         newPhermoneValue = currentPhermone + (1/bestPathCost) * self.elitismFactor
-        #         self.setPhermone(previousNode,node,newPhermoneValue)
+        for node in bestPath:
+            if node == previousNode:
+                continue
+            else:
+                currentPhermone = self.getPhermone(previousNode, node)
+                newPhermoneValue = currentPhermone + (1/bestPathCost) * self.elitismFactor
+                self.setPhermone(previousNode,node,newPhermoneValue)
 
     def updatePhermonesACS(self,paths):
         bestPath = self.cost.getBestPath(paths)
@@ -104,6 +103,4 @@ class Phermone:
                 index1 = previousNode[0]
                 index2 = node[0]
                 matrix[index1-1][index2-1] = 1
-
-        #print("Path MAtrix: ",len(matrix))
         return matrix
