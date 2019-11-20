@@ -20,7 +20,6 @@ class Phermone:
         self.tao0 = 1/((self.cost.Lnn(self.problem)) * self.lenProblem)
         #init n x n 2d array where n = size of the problem
         self.phermoneMatrix = np.full((self.lenProblem,self.lenProblem), self.tao0)
-        print(self.phermoneMatrix)
 
     def getPhermone(self,node1,node2):
         a = node1[0]-1
@@ -63,6 +62,10 @@ class Phermone:
                 else:
                     currentPhermone = self.getPhermone(previousNode, node)
                     newPhermoneValue = currentPhermone + 1/distance
+                    eliteFactor = 0
+                    if self.bestPathMatrix[previousNode[0]][node[0]] != 0:
+                        eliteFactor = self.bestPathMatrix[previousNode[0]][node[0]] * self.elitismFactor
+                    newPhermoneValue += eliteFactor
                     self.setPhermone(previousNode,node,newPhermoneValue)
 
         bestPathCost = self.cost.getCost(bestPath)
@@ -71,6 +74,7 @@ class Phermone:
             if node == previousNode:
                 continue
             else:
+                print("BEST PATH HIT")
                 currentPhermone = self.getPhermone(previousNode, node)
                 newPhermoneValue = currentPhermone + (1/bestPathCost) * self.elitismFactor
                 self.setPhermone(previousNode,node,newPhermoneValue)
@@ -98,4 +102,6 @@ class Phermone:
                 index1 = previousNode[0]
                 index2 = node[0]
                 matrix[index1-1][index2-1] = 1
+        
+        #print("Path MAtrix: ",len(matrix))
         return matrix
