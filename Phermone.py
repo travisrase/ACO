@@ -10,7 +10,7 @@ class Phermone:
         self.problem = problem
         self.tao0 = 0
         self.epsilon = float(1)
-        self.rho = float(.05)
+        self.rho = float(.2)
         self.elitismFactor = float(1)
         self.phermoneMatrix = []
         self.bestPathMatrix = []
