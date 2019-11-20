@@ -51,6 +51,7 @@ class Phermone:
 
     def updatePhermonesElitist(self,paths):
         bestPath = self.cost.getBestPath(paths)
+        self.bestPathMatrix = self.buildPathMatrix(bestPath)
         #evaporate all edges
         self.phermoneMatrix = self.phermoneMatrix * (1-self.rho)
         for path in paths:
@@ -63,21 +64,22 @@ class Phermone:
                     currentPhermone = self.getPhermone(previousNode, node)
                     newPhermoneValue = currentPhermone + 1/distance
                     eliteFactor = 0
-                    if self.bestPathMatrix[previousNode[0]][node[0]] != 0:
-                        eliteFactor = self.bestPathMatrix[previousNode[0]][node[0]] * self.elitismFactor
+                    if self.bestPathMatrix[node[0]-1][previousNode[0]-1] != 0:
+                        
+                        eliteFactor = self.getPhermone(node,previousNode) * self.elitismFactor
                     newPhermoneValue += eliteFactor
                     self.setPhermone(previousNode,node,newPhermoneValue)
 
         bestPathCost = self.cost.getCost(bestPath)
         previousNode = bestPath[0]
-        for node in bestPath:
-            if node == previousNode:
-                continue
-            else:
-                print("BEST PATH HIT")
-                currentPhermone = self.getPhermone(previousNode, node)
-                newPhermoneValue = currentPhermone + (1/bestPathCost) * self.elitismFactor
-                self.setPhermone(previousNode,node,newPhermoneValue)
+        # for node in bestPath:
+        #     if node == previousNode:
+        #         continue
+        #     else:
+        #         print("BEST PATH HIT")
+        #         currentPhermone = self.getPhermone(previousNode, node)
+        #         newPhermoneValue = currentPhermone + (1/bestPathCost) * self.elitismFactor
+        #         self.setPhermone(previousNode,node,newPhermoneValue)
 
     def updatePhermonesACS(self,paths):
         bestPath = self.cost.getBestPath(paths)
