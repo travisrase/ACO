@@ -16,14 +16,34 @@ class Cost:
                 if previousNode == None:
                     previousNode = node
                 else:
-                    x1 = previousNode[1]
-                    y1 = previousNode[2]
-                    x2 = node[1]
-                    y2 = node[2]
-                    distance = math.sqrt((x2-x1)**2 + (y2-y1)**2)
-                    cost += distance
+                    cost += self.getDistance(previousNode,node)
                     previousNode = node
             return cost
+
+    #helpers
+    def getDistance(self,node1,node2):
+        try:
+            x1 = node1[1]
+            y1 = node1[2]
+            x2 = node2[1]
+            y2 = node2[2]
+            distance = math.sqrt(abs((x2-x1)**2 + (y2-y1)**2))
+            if distance == 0:
+                return 0.00001
+            else:
+                return distance
+        except:
+            return 0.00001
+
+    def getBestPath(self,paths):
+        lowestCost = 1000000000000
+        bestPath = []
+        for path in paths:
+            cost = self.getCost(path)
+            if cost < lowestCost:
+                lowestCost = cost
+                bestPath = path
+        return bestPath
 
     def Lnn(self,problem):
         problem = list(problem)
