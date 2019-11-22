@@ -10,8 +10,8 @@ class Phermone:
         self.problem = problem
         self.tao0 = 0
         self.epsilon = float(.1)
-        self.rho = float(.2)
-        self.elitismFactor = float(1)
+        self.rho = float(.1)
+        self.elitismFactor = float(10)
         self.phermoneMatrix = []
         self.bestPathMatrix = []
         self.cost = Cost()
@@ -65,7 +65,7 @@ class Phermone:
                     newPhermoneValue = currentPhermone + 1/distance
                     eliteFactor = 0
                     if self.bestPathMatrix[node[0]-1][previousNode[0]-1] != 0:
-                        
+
                         eliteFactor = self.getPhermone(node,previousNode) * self.elitismFactor
                     newPhermoneValue += eliteFactor
                     self.setPhermone(previousNode,node,newPhermoneValue)

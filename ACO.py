@@ -16,7 +16,7 @@ class ACO:
         #the degree of influence of the phermones
         self.alpha = float(1.0)
         #the degree of influnece of the hueristic component
-        self.beta = float(2)
+        self.beta = float(3.0)
         #probability that the ant will choose the best leg for the next leg of the tour
         self.q0 = float(.9)
         self.problem = problem
