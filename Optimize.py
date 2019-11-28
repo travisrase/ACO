@@ -40,14 +40,19 @@ class Optimize:
             #some problems have rows with numbers that aren't coordinates
             #makes sure each "row " is the correct length
             if len(cleanRow) > 2:
-                self.problem += [cleanRow] 
+                self.problem += [cleanRow]
 
     def run(self):
         self.readProblem()
+        #initialize ACO
         aco = ACO(self.algorithm,self.numAnts,self.numIter,self.problem,self.optimalSolutionLenth,self.tolerance)
+        #start timer
         start_time = time.time()
+        #run solve
         solution,solutionCost = aco.solve()
+        #format the solution returned so it starts with 1 index
         formatedSol = self.formatSolution(solution)
+        #print results
         print("solution: ", formatedSol)
         print()
         print("solutionCost: ", solutionCost)
