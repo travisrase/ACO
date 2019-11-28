@@ -16,9 +16,9 @@ class ACO:
         #the degree of influence of the phermones
         self.alpha = float(1.0)
         #the degree of influnece of the hueristic component
-        self.beta = float(2)
+        self.beta = float(30.0)
         #probability that the ant will choose the best leg for the next leg of the tour
-        self.q0 = float(.9)
+        self.q0 = float(.90)
         self.problem = problem
         #the length of the known best solution
         self.optimalSolutionLenth = float(optimalSolutionLenth)
@@ -31,6 +31,7 @@ class ACO:
         self.bestPath = []
         self.bestPathCost = 100000000000
         self.iterationsSinceCostUpdate = 0
+        self.optPathCost = []
 
     def solve(self):
         #initialize the phermone matrix
@@ -55,7 +56,7 @@ class ACO:
             else:
                 self.iterationsSinceCostUpdate += 1
             #check to see how many iterations since the minimum value found has been updated
-            if (self.iterationsSinceCostUpdate >= 80):
+            if (self.iterationsSinceCostUpdate >= 200):
                 break
             #update phermones
             self.Phermones.updatePhermones(paths)
@@ -63,7 +64,11 @@ class ACO:
             i += 1
             print("i: ", i)
             print("Best Path Cost: ", self.bestPathCost)
+            self.optPathCost += [self.bestPathCost]
         return self.bestPath,self.cost.getCost(self.bestPath)
+
+    def optPathCost(self):
+        return self.optPathCost
 
     #build a path for a given ant
     def buildPath(self):
@@ -108,27 +113,38 @@ class ACO:
         index = np.random.choice(indexList, p=probabilities)
         return unvisitedNodes[index]
 
+    #get the next node greedily
     def getNextNodeGreedy(self,currentNode,unvisitedNodes):
+        #look for the best node and return that node
         bestNode = None
         bestVal = 0
+        #look through all unvisited nodes
         for unvisitedNode in unvisitedNodes:
             if bestNode == None:
                 bestNode = unvisitedNode
             else:
-                t = self.Phermones.getPhermone(currentNode,unvisitedNode)
+                #get the current phermone value between current node and unvisted node
+                phermone = self.Phermones.getPhermone(currentNode,unvisitedNode)
+                #get the distance between current node and unvisted node
                 distance = self.cost.getDistance(currentNode,unvisitedNode)
-                val = t*(1/distance)**self.beta
+                val = phermone*(1/distance)**self.beta
+                #if the cmoputed value is greater than the previosu bestVal
+                #update best val
                 if val > bestVal:
                     bestVal = val
                     bestNode = unvisitedNode
         return bestNode
 
+    #this method computes the probabilities to choose the next node
     def getProbabilities(self,currentNode, unvisitedNodes):
         probs=[]
         for unvisitedNode in unvisitedNodes:
+            #get current phermone value
             phermone = self.Phermones.getPhermone(currentNode,unvisitedNode)
+            #get distance
             distance = self.cost.getDistance(currentNode,unvisitedNode)
             if distance != 0:
+                #compute the approximate value of the path
                 val = phermone**self.alpha * (1/distance)**self.beta
             else:
                 val = 0

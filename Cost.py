@@ -51,16 +51,21 @@ class Cost:
             self.bestPath = bestPath
         return self.bestPath
 
+    #compute a greedy best path, choosing the next closest neighbor from each node
     def Lnn(self,problem):
         problem = list(problem)
         lenTour = 0
         tour = []
         unvisitedNodes = problem
+        #while the tour is not complete
         while len(tour) < len(problem):
             if len(tour) == 0:
+                #always add first node first
                 tour += [problem[0]]
+                #remove node from unvisited
                 unvisitedNodes.remove(problem[0])
             else:
+                #get the current node (last on list)
                 currentNode = tour[-1]
                 nextNode = [None]
                 minDistance = 1000000000000
@@ -68,14 +73,12 @@ class Cost:
                     if nextNode[0] == None:
                         nextNode = node
                     else:
-                        x1 = currentNode[1]
-                        y1 = currentNode[2]
-                        x2 = node[1]
-                        y2 = node[2]
-                        distance = math.sqrt((x2-x1)**2 + (y2-y1)**2)
+                        #get distnace from each node
+                        distance = self.getDistance(currentNode,node)
                         if distance < minDistance:
                             nextNode = node
                             minDistance = distance
+                #add node to tour
                 tour += [nextNode]
                 lenTour += minDistance
                 unvisitedNodes.remove(nextNode)
