@@ -2,7 +2,7 @@ import sys
 from ACO import ACO
 import time
 class Optimize:
-    def __init__(self,algorithm,numAnts,numIter,problemName,optimalSolutionLenth,tolerance):
+    def __init__(self,algorithm,numAnts,numIter,problemName,optimalSolutionLength,tolerance):
         #e for elitist, a for Ant Colony System
         self.algorithm = algorithm
         #number of ants in the colony
@@ -14,7 +14,7 @@ class Optimize:
         #A list of three tuples of index, xcord, ycord
         self.problem = []
         #the length of the known best solution
-        self.optimalSolutionLenth = optimalSolutionLenth
+        self.optimalSolutionLength = optimalSolutionLength
         #the tolerance for how close our solution is to the best
         self.tolerance = tolerance
 
@@ -40,14 +40,19 @@ class Optimize:
             #some problems have rows with numbers that aren't coordinates
             #makes sure each "row " is the correct length
             if len(cleanRow) > 2:
-                self.problem += [cleanRow] 
+                self.problem += [cleanRow]
 
     def run(self):
         self.readProblem()
-        aco = ACO(self.algorithm,self.numAnts,self.numIter,self.problem,self.optimalSolutionLenth,self.tolerance)
+        #initialize ACO
+        aco = ACO(self.algorithm,self.numAnts,self.numIter,self.problem,self.optimalSolutionLength,self.tolerance)
+        #start timer
         start_time = time.time()
+        #run solve
         solution,solutionCost = aco.solve()
+        #format the solution returned so it starts with 1 index
         formatedSol = self.formatSolution(solution)
+        #print results
         print("solution: ", formatedSol)
         print()
         print("solutionCost: ", solutionCost)
@@ -68,8 +73,8 @@ algorithm = sys.argv[1]
 numAnts = sys.argv[2]
 numIter = sys.argv[3]
 problemName = sys.argv[4]
-optimalSolutionLenth = sys.argv[5]
+optimalSolutionLength = sys.argv[5]
 tolerance = sys.argv[6]
 
-optimize = Optimize(algorithm,numAnts,numIter,problemName,optimalSolutionLenth,tolerance)
+optimize = Optimize(algorithm,numAnts,numIter,problemName,optimalSolutionLength,tolerance)
 optimize.run()

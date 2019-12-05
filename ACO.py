@@ -2,9 +2,9 @@ import numpy as np
 import random
 from Cost import Cost
 import math
-from Phermone import Phermone
+from Pheromone import Pheromone
 class ACO:
-    def __init__(self,algorithm, numAnts,numIter,problem,optimalSolutionLenth,tolerance):
+    def __init__(self,algorithm, numAnts,numIter,problem,optimalSolutionLength,tolerance):
         #the type of algorithm to use (ACS or Elitist)
         self.isACS = False
         if algorithm == "a":
@@ -13,31 +13,32 @@ class ACO:
         self.numAnts = int(numAnts)
         #number of search iterations
         self.numIter = int(numIter)
-        #the degree of influence of the phermones
-        self.alpha = 2.0
+        #the degree of influence of the pheromones
+        self.alpha = float(1.0)
         #the degree of influnece of the hueristic component
-        self.beta = float(4)
+        self.beta = float(30.0)
         #probability that the ant will choose the best leg for the next leg of the tour
-        self.q0 = float(.85)
+        self.q0 = float(.90)
         self.problem = problem
         #the length of the known best solution
-        self.optimalSolutionLenth = float(optimalSolutionLenth)
+        self.optimalSolutionLength = float(optimalSolutionLength)
         #the tolerance for how close our solution is to the best
         self.tolerance = float(tolerance)
-        #matrix keeping track of phermones between two nodes
-        self.Phermones = Phermone(algorithm,problem)
+        #matrix keeping track of pheromones between two nodes
+        self.Pheromones = Pheromone(algorithm,problem)
         self.cost = Cost()
         #a list of all ant solutions
         self.bestPath = []
         self.bestPathCost = 100000000000
         self.iterationsSinceCostUpdate = 0
+        self.optPathCost = []
 
     def solve(self):
-        #initialize the phermone matrix
-        self.Phermones.initPhermones()
+        #initialize the pheromone matrix
+        self.Pheromones.initPheromones()
         i = 0
         #make sure i < numIter
-        while (i < self.numIter and self.optimalSolutionLenth/self.cost.getCost(self.bestPath) < self.tolerance):
+        while (i < self.numIter and self.optimalSolutionLength/self.cost.getCost(self.bestPath) < self.tolerance):
             #store paths created at every iteration
             paths = []
             #for each ant build a path
@@ -46,24 +47,28 @@ class ACO:
                 path = self.buildPath()
                 paths += [path]
             #update best path and best path cost
-            localBestPath = self.cost.getBestPath(paths)
-            localBestPathCost = self.cost.getCost(localBestPath)
-            if localBestPathCost < self.bestPathCost or len(self.bestPath) == 0:
-                self.bestPath = self.cost.getBestPath(paths)
-                self.bestPathCost = localBestPathCost
+            newBestPath = self.cost.getBestPath(paths)
+            newBestPathCost = self.cost.getCost(newBestPath)
+            if newBestPathCost < self.bestPathCost or len(self.bestPath) == 0:
+                self.bestPath = newBestPath
+                self.bestPathCost = newBestPathCost
                 self.iterationsSinceCostUpdate = 0
             else:
                 self.iterationsSinceCostUpdate += 1
             #check to see how many iterations since the minimum value found has been updated
-            if (self.iterationsSinceCostUpdate >= 50):
+            if (self.iterationsSinceCostUpdate >= 200):
                 break
-            #update phermones
-            self.Phermones.updatePhermones(paths)
+            #update pheromones
+            self.Pheromones.updatePheromones(paths)
             #update iterations
             i += 1
             print("i: ", i)
             print("Best Path Cost: ", self.bestPathCost)
+            self.optPathCost += [self.bestPathCost]
         return self.bestPath,self.cost.getCost(self.bestPath)
+
+    def optPathCost(self):
+        return self.optPathCost
 
     #build a path for a given ant
     def buildPath(self):
@@ -86,13 +91,13 @@ class ACO:
             path += [nextNode]
             #remove selected node from the unvisted set of nodes
             unvisitedNodes.remove(nextNode)
-        #if it is ACS then do the local phermone update after each path is created
+        #if it is ACS then do the local pheromone update after each path is created
         if self.isACS:
-            self.Phermones.localPhermoneUpdate(path)
+            self.Pheromones.localPheromoneUpdate(path)
         return path
 
     #for a given point in a path, get the next node that the ant should visit
-    def getNextNode(self,unvisitedNodes,currentNode=None):
+    def getNextNode(self,unvisitedNodes,currentNode):
         #make sure that there are unvisted nodes in the list
         if len(unvisitedNodes) == 0:
             return None
@@ -101,38 +106,48 @@ class ACO:
             r = random.random()
             #with some probability select the next node greedily
             if r < self.q0:
-                return self.getNextNodeGreedy(unvisitedNodes,currentNode)
+                return self.getNextNodeGreedy(currentNode,unvisitedNodes)
         #build ranges of proabilities for picking each node
         probabilities = self.getProbabilities(currentNode, unvisitedNodes)
         indexList = np.arange(0,len(unvisitedNodes),1)
         index = np.random.choice(indexList, p=probabilities)
         return unvisitedNodes[index]
 
-    def getNextNodeGreedy(self,unvisitedNodes,currentNode):
+    #get the next node greedily
+    def getNextNodeGreedy(self,currentNode,unvisitedNodes):
+        #look for the best node and return that node
         bestNode = None
         bestVal = 0
-        #previousNode = None
+        #look through all unvisited nodes
         for unvisitedNode in unvisitedNodes:
             if bestNode == None:
-                t = self.Phermones.getPhermone(currentNode,unvisitedNode)
+                t = self.Pheromones.getPheromone(currentNode,unvisitedNode)
                 distance = self.cost.getDistance(currentNode,unvisitedNode)
                 bestVal = t*(1/distance)**self.beta
             else:
-                t = self.Phermones.getPhermone(currentNode,unvisitedNode)
+                #get the current pheromone value between current node and unvisted node
+                pheromone = self.Pheromones.getPheromone(currentNode,unvisitedNode)
+                #get the distance between current node and unvisted node
                 distance = self.cost.getDistance(currentNode,unvisitedNode)
-                val = t*(1/distance)**self.beta
+                val = pheromone*(1/distance)**self.beta
+                #if the cmoputed value is greater than the previosu bestVal
+                #update best val
                 if val > bestVal:
                     bestVal = val
                     bestNode = unvisitedNode
         return bestNode
 
+    #this method computes the probabilities to choose the next node
     def getProbabilities(self,currentNode, unvisitedNodes):
         probs=[]
         for unvisitedNode in unvisitedNodes:
-            phermone = self.Phermones.getPhermone(currentNode,unvisitedNode)
+            #get current pheromone value
+            pheromone = self.Pheromones.getPheromone(currentNode,unvisitedNode)
+            #get distance
             distance = self.cost.getDistance(currentNode,unvisitedNode)
             if distance != 0:
-                val = phermone**self.alpha * (1/distance)**self.beta
+                #compute the approximate value of the path
+                val = pheromone**self.alpha * (1/distance)**self.beta
             else:
                 val = 0
             probs += [val]
