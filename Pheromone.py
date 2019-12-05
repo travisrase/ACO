@@ -108,7 +108,7 @@ class Pheromone:
                 pheromone = (1-self.rho)*tCurrent + self.rho*(1/self.cost.getCost(bestPath))
                 self.setPheromone(previousNode,node,pheromone)
 
-    #used to efficiently check weather or not an edge is in the best path
+    #used to efficiently check whether or not an edge is in the best path
     def buildPathMatrix(self,path):
         #build a matrix with 1's on edges in best path
         lengthPath = len(path)
