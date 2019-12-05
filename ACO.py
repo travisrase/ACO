@@ -129,7 +129,7 @@ class ACO:
                 #get the distance between current node and unvisted node
                 distance = self.cost.getDistance(currentNode,unvisitedNode)
                 val = pheromone*(1/distance)**self.beta
-                #if the cmoputed value is greater than the previosu bestVal
+                #if the computed value is greater than the previous bestVal
                 #update best val
                 if val > bestVal:
                     bestVal = val
