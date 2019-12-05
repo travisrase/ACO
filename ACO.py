@@ -79,7 +79,6 @@ class ACO:
         for node in range(len(self.problem)):
             if len(path) > 0:
                 currentNode = path[-1]
-                # PROBLEM WITH FILE? PROBLEM FOR FIRST TWO INDEX
                 nextNode = self.getNextNode(unvisitedNodes,currentNode)
                 if nextNode == None:
                     break
